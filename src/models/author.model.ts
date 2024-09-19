@@ -12,7 +12,7 @@ export class Author
   extends Model<AuthorAttributes>
   implements AuthorAttributes
 {
-  public id!: number;
+  public id?: number;
   public first_name!: string;
   public last_name!: string;
 }
