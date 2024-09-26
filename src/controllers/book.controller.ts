@@ -1,4 +1,4 @@
-import { Controller, Get, Route, Tags } from "tsoa";
+import { Controller, Get, Route, Tags, Post, Body } from "tsoa";
 import { BookDTO } from "../dto/book.dto";
 import { bookService } from "../services/book.service";
 
@@ -9,4 +9,29 @@ export class BookController extends Controller {
   public async getAllBooks(): Promise<BookDTO[]> {
     return bookService.getAllBooks();
   }
+
+  @Get("{id}")
+  public async getAuthorById(@Get() id: number): Promise<BookDTO | null> {
+    const book = await bookService.getBookById(id);
+
+    if(!book){
+      const error = new Error('Book not found');
+      (error as any).status = 404;
+      throw error;
+    }
+    return book;
+  }
+
+  @Post("/")
+  public async createBook(
+    @Body() requestBody: BookDTO
+  ): Promise<BookDTO | null> {
+    const { title, publish_year, isbn, author} = requestBody;
+if (!author || !author.id){
+  throw new Error("ID auteur requis");
+}
+
+    return bookService.createBook(title, publish_year, isbn, author.id!);
+  }
+
 }
