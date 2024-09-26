@@ -1,4 +1,4 @@
-import { Controller, Get, Route, Tags, Post, Body } from "tsoa";
+import { Controller, Get, Route, Tags, Post, Body, Patch, Path } from "tsoa";
 import { BookDTO } from "../dto/book.dto";
 import { bookService } from "../services/book.service";
 
@@ -34,4 +34,16 @@ if (!author || !author.id){
     return bookService.createBook(title, publish_year, isbn, author.id!);
   }
 
+
+  @Patch("{id}")
+  public async updateBook(
+    @Path() id: number,
+    @Body() requestBody: BookDTO
+  ): Promise<BookDTO | null> {
+    const { title, publish_year, isbn, author } = requestBody;
+    if (!author || !author.id){
+      throw new Error("ID auteur requis");
+    }
+    return bookService.updateBook(id, title,publish_year,isbn, author.id);
+  }
 }
