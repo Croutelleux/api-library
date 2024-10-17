@@ -1,5 +1,7 @@
 # Exercice
 
+Lucas Dilas
+
 1) Créer une table utilisateur qui comprendra les logins et mot de passe (en base 64) des utilisateurs
 2) Créer une route /auth qui prendra en entrée un login + mot de passe et générera un token JWT simple
 3) Mettre à jour tsoa.json pour mettre une possibilité d'ajout du token :
