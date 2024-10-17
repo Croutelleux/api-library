@@ -1,11 +1,11 @@
 import { Model, DataTypes } from "sequelize";
 import sequelize from "../config/database"; // Connexion à la base de données
 import { Book } from "./book.model";
-
 export interface AuthorAttributes {
-  id: number | undefined;
+  id?: number;
   first_name: string;
   last_name: string;
+  books?: Book[];
 }
 
 export class Author
@@ -15,6 +15,7 @@ export class Author
   public id!: number;
   public first_name!: string;
   public last_name!: string;
+  public books!: Book[];
 }
 
 Author.init(
@@ -36,5 +37,5 @@ Author.init(
   {
     sequelize,
     tableName: "Author",
-  }
+  },
 );

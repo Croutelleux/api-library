@@ -19,7 +19,7 @@ app.use(
     swaggerOptions: {
       url: "/swagger.json",
     },
-  })
+  }),
 );
 
 RegisterRoutes(app);

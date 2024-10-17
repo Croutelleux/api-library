@@ -15,35 +15,100 @@ import type { Request as ExRequest, Response as ExResponse, RequestHandler, Rout
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 const models: TsoaRoute.Models = {
-    "BookCollectionDTO": {
+    "AuthorOutputDTO": {
         "dataType": "refObject",
         "properties": {
-            "id": {"dataType":"double"},
-            "book_id": {"dataType":"double","required":true},
-            "available": {"dataType":"boolean","required":true},
-            "state": {"dataType":"string","required":true},
-        },
-        "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "AuthorDTO": {
-        "dataType": "refObject",
-        "properties": {
-            "id": {"dataType":"double"},
+            "id": {"dataType":"double","required":true},
             "first_name": {"dataType":"string","required":true},
             "last_name": {"dataType":"string","required":true},
         },
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "BookDTO": {
+    "BookOutputDTO": {
         "dataType": "refObject",
         "properties": {
-            "id": {"dataType":"double"},
+            "id": {"dataType":"double","required":true},
             "title": {"dataType":"string","required":true},
             "publish_year": {"dataType":"double","required":true},
-            "author": {"ref":"AuthorDTO"},
             "isbn": {"dataType":"string","required":true},
+            "author": {"ref":"AuthorOutputDTO","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "State": {
+        "dataType": "refEnum",
+        "enums": ["Inutilisable","Mauvais","Passable","Bon","Très bon","Neuf"],
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "BookCollectionOutputDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"double","required":true},
+            "book": {"ref":"BookOutputDTO","required":true},
+            "available": {"dataType":"double","required":true},
+            "state": {"ref":"State","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "BookCollectionInputDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "book_id": {"dataType":"double","required":true},
+            "available": {"dataType":"double","required":true},
+            "state": {"ref":"State","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "BookCollectionInputPatchDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "book_id": {"dataType":"double"},
+            "available": {"dataType":"double"},
+            "state": {"ref":"State"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "BookInputDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "title": {"dataType":"string","required":true},
+            "publish_year": {"dataType":"double","required":true},
+            "author_id": {"dataType":"double","required":true},
+            "isbn": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "BookInputPatchDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "title": {"dataType":"string"},
+            "publish_year": {"dataType":"double"},
+            "author_id": {"dataType":"double"},
+            "isbn": {"dataType":"string"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "AuthorInputDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "first_name": {"dataType":"string","required":true},
+            "last_name": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "AuthorInputPatchDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "first_name": {"dataType":"string"},
+            "last_name": {"dataType":"string"},
         },
         "additionalProperties": false,
     },
@@ -65,11 +130,11 @@ export function RegisterRoutes(app: Router) {
 
 
     
-        app.get('/bookCollections',
+        app.get('/book-collections',
             ...(fetchMiddlewares<RequestHandler>(BookCollectionController)),
-            ...(fetchMiddlewares<RequestHandler>(BookCollectionController.prototype.getAllBookCollections)),
+            ...(fetchMiddlewares<RequestHandler>(BookCollectionController.prototype.getAllBooksCollection)),
 
-            async function BookCollectionController_getAllBookCollections(request: ExRequest, response: ExResponse, next: any) {
+            async function BookCollectionController_getAllBooksCollection(request: ExRequest, response: ExResponse, next: any) {
             const args: Record<string, TsoaRoute.ParameterSchema> = {
             };
 
@@ -82,7 +147,7 @@ export function RegisterRoutes(app: Router) {
                 const controller = new BookCollectionController();
 
               await templateService.apiHandler({
-                methodName: 'getAllBookCollections',
+                methodName: 'getAllBooksCollection',
                 controller,
                 response,
                 next,
@@ -94,11 +159,11 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/bookCollections/:id',
+        app.get('/book-collections/:id',
             ...(fetchMiddlewares<RequestHandler>(BookCollectionController)),
-            ...(fetchMiddlewares<RequestHandler>(BookCollectionController.prototype.getBookCollectionById)),
+            ...(fetchMiddlewares<RequestHandler>(BookCollectionController.prototype.getBookCollection)),
 
-            async function BookCollectionController_getBookCollectionById(request: ExRequest, response: ExResponse, next: any) {
+            async function BookCollectionController_getBookCollection(request: ExRequest, response: ExResponse, next: any) {
             const args: Record<string, TsoaRoute.ParameterSchema> = {
                     id: {"in":"path","name":"id","required":true,"dataType":"double"},
             };
@@ -112,7 +177,7 @@ export function RegisterRoutes(app: Router) {
                 const controller = new BookCollectionController();
 
               await templateService.apiHandler({
-                methodName: 'getBookCollectionById',
+                methodName: 'getBookCollection',
                 controller,
                 response,
                 next,
@@ -124,13 +189,13 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.post('/bookCollections',
+        app.post('/book-collections',
             ...(fetchMiddlewares<RequestHandler>(BookCollectionController)),
-            ...(fetchMiddlewares<RequestHandler>(BookCollectionController.prototype.createBookCollection)),
+            ...(fetchMiddlewares<RequestHandler>(BookCollectionController.prototype.postBookCollection)),
 
-            async function BookCollectionController_createBookCollection(request: ExRequest, response: ExResponse, next: any) {
+            async function BookCollectionController_postBookCollection(request: ExRequest, response: ExResponse, next: any) {
             const args: Record<string, TsoaRoute.ParameterSchema> = {
-                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"BookCollectionDTO"},
+                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"BookCollectionInputDTO"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -142,7 +207,7 @@ export function RegisterRoutes(app: Router) {
                 const controller = new BookCollectionController();
 
               await templateService.apiHandler({
-                methodName: 'createBookCollection',
+                methodName: 'postBookCollection',
                 controller,
                 response,
                 next,
@@ -154,7 +219,38 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.delete('/bookCollections/:id',
+        app.patch('/book-collections/:id',
+            ...(fetchMiddlewares<RequestHandler>(BookCollectionController)),
+            ...(fetchMiddlewares<RequestHandler>(BookCollectionController.prototype.patchBookCollection)),
+
+            async function BookCollectionController_patchBookCollection(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+                    id: {"in":"path","name":"id","required":true,"dataType":"double"},
+                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"BookCollectionInputPatchDTO"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new BookCollectionController();
+
+              await templateService.apiHandler({
+                methodName: 'patchBookCollection',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.delete('/book-collections/:id',
             ...(fetchMiddlewares<RequestHandler>(BookCollectionController)),
             ...(fetchMiddlewares<RequestHandler>(BookCollectionController.prototype.deleteBookCollection)),
 
@@ -215,9 +311,9 @@ export function RegisterRoutes(app: Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/books/:id',
             ...(fetchMiddlewares<RequestHandler>(BookController)),
-            ...(fetchMiddlewares<RequestHandler>(BookController.prototype.getAuthorById)),
+            ...(fetchMiddlewares<RequestHandler>(BookController.prototype.getBook)),
 
-            async function BookController_getAuthorById(request: ExRequest, response: ExResponse, next: any) {
+            async function BookController_getBook(request: ExRequest, response: ExResponse, next: any) {
             const args: Record<string, TsoaRoute.ParameterSchema> = {
                     id: {"in":"path","name":"id","required":true,"dataType":"double"},
             };
@@ -231,7 +327,7 @@ export function RegisterRoutes(app: Router) {
                 const controller = new BookController();
 
               await templateService.apiHandler({
-                methodName: 'getAuthorById',
+                methodName: 'getBook',
                 controller,
                 response,
                 next,
@@ -245,11 +341,11 @@ export function RegisterRoutes(app: Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/books',
             ...(fetchMiddlewares<RequestHandler>(BookController)),
-            ...(fetchMiddlewares<RequestHandler>(BookController.prototype.createBook)),
+            ...(fetchMiddlewares<RequestHandler>(BookController.prototype.postBooks)),
 
-            async function BookController_createBook(request: ExRequest, response: ExResponse, next: any) {
+            async function BookController_postBooks(request: ExRequest, response: ExResponse, next: any) {
             const args: Record<string, TsoaRoute.ParameterSchema> = {
-                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"BookDTO"},
+                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"BookInputDTO"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -261,7 +357,7 @@ export function RegisterRoutes(app: Router) {
                 const controller = new BookController();
 
               await templateService.apiHandler({
-                methodName: 'createBook',
+                methodName: 'postBooks',
                 controller,
                 response,
                 next,
@@ -275,12 +371,12 @@ export function RegisterRoutes(app: Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.patch('/books/:id',
             ...(fetchMiddlewares<RequestHandler>(BookController)),
-            ...(fetchMiddlewares<RequestHandler>(BookController.prototype.updateBook)),
+            ...(fetchMiddlewares<RequestHandler>(BookController.prototype.patchBook)),
 
-            async function BookController_updateBook(request: ExRequest, response: ExResponse, next: any) {
+            async function BookController_patchBook(request: ExRequest, response: ExResponse, next: any) {
             const args: Record<string, TsoaRoute.ParameterSchema> = {
                     id: {"in":"path","name":"id","required":true,"dataType":"double"},
-                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"BookDTO"},
+                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"BookInputPatchDTO"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -292,7 +388,67 @@ export function RegisterRoutes(app: Router) {
                 const controller = new BookController();
 
               await templateService.apiHandler({
-                methodName: 'updateBook',
+                methodName: 'patchBook',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.delete('/books/:id',
+            ...(fetchMiddlewares<RequestHandler>(BookController)),
+            ...(fetchMiddlewares<RequestHandler>(BookController.prototype.deleteBook)),
+
+            async function BookController_deleteBook(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+                    id: {"in":"path","name":"id","required":true,"dataType":"double"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new BookController();
+
+              await templateService.apiHandler({
+                methodName: 'deleteBook',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/books/:id/book-collections',
+            ...(fetchMiddlewares<RequestHandler>(BookController)),
+            ...(fetchMiddlewares<RequestHandler>(BookController.prototype.getBookCollectionsByBookId)),
+
+            async function BookController_getBookCollectionsByBookId(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+                    id: {"in":"path","name":"id","required":true,"dataType":"double"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new BookController();
+
+              await templateService.apiHandler({
+                methodName: 'getBookCollectionsByBookId',
                 controller,
                 response,
                 next,
@@ -369,7 +525,7 @@ export function RegisterRoutes(app: Router) {
 
             async function AuthorController_createAuthor(request: ExRequest, response: ExResponse, next: any) {
             const args: Record<string, TsoaRoute.ParameterSchema> = {
-                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"AuthorDTO"},
+                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"AuthorInputDTO"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -430,7 +586,7 @@ export function RegisterRoutes(app: Router) {
             async function AuthorController_updateAuthor(request: ExRequest, response: ExResponse, next: any) {
             const args: Record<string, TsoaRoute.ParameterSchema> = {
                     id: {"in":"path","name":"id","required":true,"dataType":"double"},
-                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"AuthorDTO"},
+                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"AuthorInputPatchDTO"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -443,6 +599,36 @@ export function RegisterRoutes(app: Router) {
 
               await templateService.apiHandler({
                 methodName: 'updateAuthor',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/authors/:id/books',
+            ...(fetchMiddlewares<RequestHandler>(AuthorController)),
+            ...(fetchMiddlewares<RequestHandler>(AuthorController.prototype.getBooksByAuthorId)),
+
+            async function AuthorController_getBooksByAuthorId(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+                    id: {"in":"path","name":"id","required":true,"dataType":"double"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new AuthorController();
+
+              await templateService.apiHandler({
+                methodName: 'getBooksByAuthorId',
                 controller,
                 response,
                 next,

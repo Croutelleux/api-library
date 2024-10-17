@@ -1,45 +1,61 @@
-import {Controller, Get, Route, Tags, Post, Body, Path, Delete} from "tsoa";
-import { BookCollectionDTO } from "../dto/bookCollection.dto";
-import { BookCollectionService } from "../services/bookCollection.service";
-
-@Route("bookCollections")
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Patch,
+  Path,
+  Post,
+  Route,
+  Tags,
+} from "tsoa";
+import {
+  BookCollectionInputDTO,
+  BookCollectionInputPatchDTO,
+  BookCollectionOutputDTO,
+} from "../dto/bookCollection.dto";
+import { bookCollectionService } from "../services/bookCollection.service";
+@Route("book-collections")
 @Tags("BookCollections")
 export class BookCollectionController extends Controller {
-    @Get("/")
-    public async getAllBookCollections(): Promise<BookCollectionDTO[]> {
-        return BookCollectionService.getAllBookCollections();
-    }
+  @Get("/")
+  public async getAllBooksCollection(): Promise<BookCollectionOutputDTO[]> {
+    return bookCollectionService.getAllBookCollections();
+  }
 
-    @Get("{id}")
-    public async getBookCollectionById(@Path() id: number): Promise<BookCollectionDTO | null> {
-        const bookCollection = await BookCollectionService.getBookCollectionById(id);
-        if (!bookCollection) {
-            this.setStatus(404);
-            return null;
-        }
-        return bookCollection;
-    }
+  @Get("{id}")
+  public async getBookCollection(
+    @Path("id") id: number,
+  ): Promise<BookCollectionOutputDTO> {
+    return bookCollectionService.getBookCollectionById(id);
+  }
 
-    @Post("/")
-    public async createBookCollection(@Body() requestBody: BookCollectionDTO): Promise<BookCollectionDTO> {
-        return new Promise(async (resolve, reject) => {
-            const { book_id, available, state } = requestBody;
+  @Post("/")
+  public async postBookCollection(
+    @Body() requestBody: BookCollectionInputDTO,
+  ): Promise<BookCollectionOutputDTO> {
+    return bookCollectionService.createBookCollection(
+      requestBody.book_id,
+      requestBody.available,
+      requestBody.state,
+    );
+  }
 
-            try {
-                const createdBookCollection = await BookCollectionService.createBookCollection(book_id, available, state);
-                resolve(createdBookCollection);
-            } catch (error) {
-                reject(error);
-            }
-        });
-    }
-    @Delete("{id}")
-    public async deleteBookCollection(id: number): Promise<void> {
-        if (!id) {
-            const error = new Error("ID not found");
-            (error as any).status = 400;
-            throw error;
-        }
-        await BookCollectionService.deleteBookCollection(id);
-    }
+  @Patch("{id}")
+  public async patchBookCollection(
+    @Path("id") id: number,
+    @Body() requestBody: BookCollectionInputPatchDTO,
+  ): Promise<BookCollectionOutputDTO> {
+    return bookCollectionService.updateBookCollection(
+      id,
+      requestBody.book_id,
+      requestBody.available,
+      requestBody.state,
+    );
+  }
+
+  @Delete("{id}")
+  public async deleteBookCollection(@Path("id") id: number): Promise<void> {
+    await bookCollectionService.deleteBookCollection(id);
+  }
 }

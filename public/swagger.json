@@ -7,21 +7,106 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
-			"BookCollectionDTO": {
+			"AuthorOutputDTO": {
 				"properties": {
 					"id": {
 						"type": "number",
 						"format": "double"
 					},
+					"first_name": {
+						"type": "string"
+					},
+					"last_name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"first_name",
+					"last_name"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"BookOutputDTO": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"title": {
+						"type": "string"
+					},
+					"publish_year": {
+						"type": "number",
+						"format": "double"
+					},
+					"isbn": {
+						"type": "string"
+					},
+					"author": {
+						"$ref": "#/components/schemas/AuthorOutputDTO"
+					}
+				},
+				"required": [
+					"id",
+					"title",
+					"publish_year",
+					"isbn",
+					"author"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"State": {
+				"enum": [
+					"Inutilisable",
+					"Mauvais",
+					"Passable",
+					"Bon",
+					"Très bon",
+					"Neuf"
+				],
+				"type": "string"
+			},
+			"BookCollectionOutputDTO": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"book": {
+						"$ref": "#/components/schemas/BookOutputDTO"
+					},
+					"available": {
+						"type": "number",
+						"format": "double"
+					},
+					"state": {
+						"$ref": "#/components/schemas/State"
+					}
+				},
+				"required": [
+					"id",
+					"book",
+					"available",
+					"state"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"BookCollectionInputDTO": {
+				"properties": {
 					"book_id": {
 						"type": "number",
 						"format": "double"
 					},
 					"available": {
-						"type": "boolean"
+						"type": "number",
+						"format": "double"
 					},
 					"state": {
-						"type": "string"
+						"$ref": "#/components/schemas/State"
 					}
 				},
 				"required": [
@@ -32,12 +117,71 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"AuthorDTO": {
+			"BookCollectionInputPatchDTO": {
 				"properties": {
-					"id": {
+					"book_id": {
 						"type": "number",
 						"format": "double"
 					},
+					"available": {
+						"type": "number",
+						"format": "double"
+					},
+					"state": {
+						"$ref": "#/components/schemas/State"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"BookInputDTO": {
+				"properties": {
+					"title": {
+						"type": "string"
+					},
+					"publish_year": {
+						"type": "number",
+						"format": "double"
+					},
+					"author_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"isbn": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"title",
+					"publish_year",
+					"author_id",
+					"isbn"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"BookInputPatchDTO": {
+				"properties": {
+					"title": {
+						"type": "string"
+					},
+					"publish_year": {
+						"type": "number",
+						"format": "double"
+					},
+					"author_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"isbn": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"AuthorInputDTO": {
+				"properties": {
 					"first_name": {
 						"type": "string"
 					},
@@ -52,31 +196,15 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"BookDTO": {
+			"AuthorInputPatchDTO": {
 				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"title": {
+					"first_name": {
 						"type": "string"
 					},
-					"publish_year": {
-						"type": "number",
-						"format": "double"
-					},
-					"author": {
-						"$ref": "#/components/schemas/AuthorDTO"
-					},
-					"isbn": {
+					"last_name": {
 						"type": "string"
 					}
 				},
-				"required": [
-					"title",
-					"publish_year",
-					"isbn"
-				],
 				"type": "object",
 				"additionalProperties": false
 			}
@@ -92,9 +220,9 @@
 		"contact": {}
 	},
 	"paths": {
-		"/bookCollections": {
+		"/book-collections": {
 			"get": {
-				"operationId": "GetAllBookCollections",
+				"operationId": "GetAllBooksCollection",
 				"responses": {
 					"200": {
 						"description": "Ok",
@@ -102,7 +230,7 @@
 							"application/json": {
 								"schema": {
 									"items": {
-										"$ref": "#/components/schemas/BookCollectionDTO"
+										"$ref": "#/components/schemas/BookCollectionOutputDTO"
 									},
 									"type": "array"
 								}
@@ -117,14 +245,14 @@
 				"parameters": []
 			},
 			"post": {
-				"operationId": "CreateBookCollection",
+				"operationId": "PostBookCollection",
 				"responses": {
 					"200": {
 						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/BookCollectionDTO"
+									"$ref": "#/components/schemas/BookCollectionOutputDTO"
 								}
 							}
 						}
@@ -140,28 +268,23 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/BookCollectionDTO"
+								"$ref": "#/components/schemas/BookCollectionInputDTO"
 							}
 						}
 					}
 				}
 			}
 		},
-		"/bookCollections/{id}": {
+		"/book-collections/{id}": {
 			"get": {
-				"operationId": "GetBookCollectionById",
+				"operationId": "GetBookCollection",
 				"responses": {
 					"200": {
 						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
-									"allOf": [
-										{
-											"$ref": "#/components/schemas/BookCollectionDTO"
-										}
-									],
-									"nullable": true
+									"$ref": "#/components/schemas/BookCollectionOutputDTO"
 								}
 							}
 						}
@@ -182,6 +305,46 @@
 						}
 					}
 				]
+			},
+			"patch": {
+				"operationId": "PatchBookCollection",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BookCollectionOutputDTO"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"BookCollections"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/BookCollectionInputPatchDTO"
+							}
+						}
+					}
+				}
 			},
 			"delete": {
 				"operationId": "DeleteBookCollection",
@@ -217,7 +380,7 @@
 							"application/json": {
 								"schema": {
 									"items": {
-										"$ref": "#/components/schemas/BookDTO"
+										"$ref": "#/components/schemas/BookOutputDTO"
 									},
 									"type": "array"
 								}
@@ -232,19 +395,14 @@
 				"parameters": []
 			},
 			"post": {
-				"operationId": "CreateBook",
+				"operationId": "PostBooks",
 				"responses": {
 					"200": {
 						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
-									"allOf": [
-										{
-											"$ref": "#/components/schemas/BookDTO"
-										}
-									],
-									"nullable": true
+									"$ref": "#/components/schemas/BookOutputDTO"
 								}
 							}
 						}
@@ -260,7 +418,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/BookDTO"
+								"$ref": "#/components/schemas/BookInputDTO"
 							}
 						}
 					}
@@ -269,19 +427,14 @@
 		},
 		"/books/{id}": {
 			"get": {
-				"operationId": "GetAuthorById",
+				"operationId": "GetBook",
 				"responses": {
 					"200": {
 						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
-									"allOf": [
-										{
-											"$ref": "#/components/schemas/BookDTO"
-										}
-									],
-									"nullable": true
+									"$ref": "#/components/schemas/BookOutputDTO"
 								}
 							}
 						}
@@ -304,19 +457,14 @@
 				]
 			},
 			"patch": {
-				"operationId": "UpdateBook",
+				"operationId": "PatchBook",
 				"responses": {
 					"200": {
 						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
-									"allOf": [
-										{
-											"$ref": "#/components/schemas/BookDTO"
-										}
-									],
-									"nullable": true
+									"$ref": "#/components/schemas/BookOutputDTO"
 								}
 							}
 						}
@@ -342,11 +490,69 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/BookDTO"
+								"$ref": "#/components/schemas/BookInputPatchDTO"
 							}
 						}
 					}
 				}
+			},
+			"delete": {
+				"operationId": "DeleteBook",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"Books"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/books/{id}/book-collections": {
+			"get": {
+				"operationId": "GetBookCollectionsByBookId",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/BookCollectionOutputDTO"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Books"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
 			}
 		},
 		"/authors": {
@@ -359,7 +565,7 @@
 							"application/json": {
 								"schema": {
 									"items": {
-										"$ref": "#/components/schemas/AuthorDTO"
+										"$ref": "#/components/schemas/AuthorOutputDTO"
 									},
 									"type": "array"
 								}
@@ -381,7 +587,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/AuthorDTO"
+									"$ref": "#/components/schemas/AuthorOutputDTO"
 								}
 							}
 						}
@@ -397,7 +603,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/AuthorDTO"
+								"$ref": "#/components/schemas/AuthorInputDTO"
 							}
 						}
 					}
@@ -413,12 +619,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"allOf": [
-										{
-											"$ref": "#/components/schemas/AuthorDTO"
-										}
-									],
-									"nullable": true
+									"$ref": "#/components/schemas/AuthorOutputDTO"
 								}
 							}
 						}
@@ -471,12 +672,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"allOf": [
-										{
-											"$ref": "#/components/schemas/AuthorDTO"
-										}
-									],
-									"nullable": true
+									"$ref": "#/components/schemas/AuthorOutputDTO"
 								}
 							}
 						}
@@ -502,11 +698,46 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/AuthorDTO"
+								"$ref": "#/components/schemas/AuthorInputPatchDTO"
 							}
 						}
 					}
 				}
+			}
+		},
+		"/authors/{id}/books": {
+			"get": {
+				"operationId": "GetBooksByAuthorId",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/BookOutputDTO"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Authors"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
 			}
 		}
 	},

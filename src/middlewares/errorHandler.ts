@@ -11,13 +11,28 @@ const errorHandler = (
   err: Error,
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void => {
   console.error("An error occurred:", err);
 
   // Définir un statut d'erreur par défaut
   const statusCode = err.status || 500;
-  const message = statusCode === 400 ? "Invalid Request" : err.message || "Internal Server Error";
+
+  if (statusCode === 400 && "fields" in err) {
+    for (let key in err.fields as string[]) {
+      let request: any = (err.fields as any[])[key];
+      if ("message" in request && "value" in request) {
+        err.message =
+          key.replace("requestBody.", "") +
+          " " +
+          request.value +
+          " " +
+          request.message;
+      }
+    }
+  }
+
+  const message = err.message || "Internal Server Error";
 
   // Envoyer la réponse d'erreur au client
   res.status(statusCode).json({

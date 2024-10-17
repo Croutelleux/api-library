@@ -1,58 +1,125 @@
+import { ForeignKeyConstraintError } from "sequelize";
+import { BookOutputDTO } from "../dto/book.dto";
+import { BookCollectionOutputDTO } from "../dto/bookCollection.dto";
+import { notFound } from "../error/NotFoundError";
+import { BookMapper } from "../mapper/book.mapper";
+import { BookCollectionMapper } from "../mapper/bookCollection.mapper";
 import { Author } from "../models/author.model";
 import { Book } from "../models/book.model";
+import { BookCollection } from "../models/bookCollection.model";
 
 export class BookService {
-  public async getAllBooks(): Promise<Book[]> {
-    return Book.findAll({
-        include: [{
-            model: Author,
-            as: 'author'
-        }]
-    });
+  readonly includeAuthor = {
+    include: [
+      {
+        model: Author,
+        as: "author",
+      },
+    ],
+  };
+  public async getAllBooks(): Promise<BookOutputDTO[]> {
+    let books = await Book.findAll(this.includeAuthor);
+
+    return BookMapper.toOutputDtoList(books);
   }
 
-  public async getBookById(id: number): Promise<Book | null> {
-    return Book.findByPk(id);
-  }
+  public async getBookById(id: number): Promise<BookOutputDTO> {
+    let book = await Book.findByPk(id, this.includeAuthor);
 
+    if (book) {
+      return BookMapper.toOutputDto(book);
+    } else {
+      notFound("Book");
+    }
+  }
 
   public async createBook(
     title: string,
-    publish_year: number,
+    publishYear: number,
+    authorId: number,
     isbn: string,
-    author_id: number
-  ): Promise<Book> {
-    if (!await Author.findByPk(author_id)) {
-      throw new Error("L'auteur n'existe pas.");
+  ): Promise<BookOutputDTO> {
+    try {
+      let book = await Book.create({
+        title: title,
+        publish_year: publishYear,
+        isbn: isbn,
+        author_id: authorId,
+      });
+
+      return BookMapper.toOutputDto(book);
+    } catch (err) {
+      if (err instanceof ForeignKeyConstraintError) {
+        throw notFound("Author");
+      }
+      throw err;
     }
-    return Book.create({title, publish_year, isbn, author_id});
   }
 
   public async updateBook(
     id: number,
     title?: string,
-    publish_year?: number,
+    publishYear?: number,
+    authorId?: number,
     isbn?: string,
-    author_id?: number
-  ): Promise<Book | null> {
+  ): Promise<BookOutputDTO> {
     const book = await Book.findByPk(id);
-    if (!await Author.findByPk(author_id)) {
-      throw new Error("L'auteur n'existe pas.");
-    }
-    if (!await Author.findByPk(id)) {
-      throw new Error("Le livre n'existe pas.");
-    }
     if (book) {
-      if (title) book.title = title;
-      if (publish_year) book.publish_year = publish_year;
-      if (isbn) book.isbn = isbn;
-      if (author_id) book.author_id = author_id;
-      await book.save();
-      return book;
+      if (title !== undefined) book.title = title;
+      if (publishYear != undefined) book.publish_year = publishYear;
+      if (authorId !== undefined) book.author_id = authorId;
+      if (isbn !== undefined) book.isbn = isbn;
+      try {
+        await book.save();
+      } catch (err) {
+        if (err instanceof ForeignKeyConstraintError) {
+          throw notFound("Author");
+        }
+        throw err;
+      }
+      return BookMapper.toOutputDto(book);
+    } else {
+      notFound("Book");
     }
-    return null;
   }
 
+  public async deleteBook(id: number): Promise<void> {
+    const book = await Book.findByPk(id, {
+      include: [
+        {
+          model: BookCollection,
+          as: "collections",
+        },
+      ],
+    });
+    if (book) {
+      if (book.collections.length > 0) {
+        const error = new Error(
+          "Deletion of book " +
+            id +
+            " isn't possible due to presence of his.er books in library",
+        );
+        (error as any).status = 412;
+        throw error;
+      } else {
+        book.destroy();
+      }
+    } else {
+      notFound("Book");
+    }
+  }
+
+  public async getBookCollectionsByBookId(
+    id: number,
+  ): Promise<BookCollectionOutputDTO[]> {
+    return BookCollectionMapper.toOutputDtoList(
+      await BookCollection.findAll({
+        where: {
+          book_id: id,
+        },
+      }),
+    );
+  }
 }
 
 export const bookService = new BookService();
