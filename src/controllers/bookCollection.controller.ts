@@ -8,6 +8,7 @@ import {
   Post,
   Route,
   Tags,
+  Security,
 } from "tsoa";
 import {
   BookCollectionInputDTO,
@@ -31,6 +32,7 @@ export class BookCollectionController extends Controller {
   }
 
   @Post("/")
+  @Security("jwt", ["bookCollection:write"])
   public async postBookCollection(
     @Body() requestBody: BookCollectionInputDTO,
   ): Promise<BookCollectionOutputDTO> {
@@ -42,6 +44,7 @@ export class BookCollectionController extends Controller {
   }
 
   @Patch("{id}")
+  @Security("jwt", ["bookCollection:write"])
   public async patchBookCollection(
     @Path("id") id: number,
     @Body() requestBody: BookCollectionInputPatchDTO,

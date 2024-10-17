@@ -8,6 +8,7 @@ import {
   Post,
   Route,
   Tags,
+  Security,
 } from "tsoa";
 import {
   BookInputDTO,
@@ -31,6 +32,7 @@ export class BookController extends Controller {
   }
 
   @Post("/")
+  @Security('jwt', ['book:write'])
   public async postBooks(
     @Body() requestBody: BookInputDTO,
   ): Promise<BookOutputDTO> {
@@ -43,6 +45,7 @@ export class BookController extends Controller {
   }
 
   @Patch("{id}")
+  @Security('jwt', ['book:write'])
   public async patchBook(
     @Path("id") id: number,
     @Body() requestBody: BookInputPatchDTO,
@@ -57,6 +60,7 @@ export class BookController extends Controller {
   }
 
   @Delete("{id}")
+  @Security("jwt", ["book:delete"])
   public async deleteBook(@Path("id") id: number): Promise<void> {
     await bookService.deleteBook(id);
   }

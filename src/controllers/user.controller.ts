@@ -44,12 +44,14 @@ export class UserController extends Controller {
 
   // Supprime un utilisateur par ID
   @Delete("{id}")
+  @Security("jwt", ["user:delete"])
   public async deleteUser(@Path() id: number): Promise<void> {
     await userService.deleteUser(id);
   }
 
   // Met à jour un utilisateur par ID
   @Patch("{id}")
+  @Security("jwt", ["user:write"])
   public async updateUser(
     @Path() id: number,
     @Body() requestBody: UserInputPatchDTO,
