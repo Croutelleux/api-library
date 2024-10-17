@@ -26,7 +26,7 @@ export class UserService {
     password: string,
   ): Promise<UserOutputDTO> {
     return UserMapper.toOutputDto(
-      await User.create({ username: username, password: btoa(password) }),
+      await User.create({ username: username, password: password }),
     );
   }
 
